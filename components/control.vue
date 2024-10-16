@@ -7,9 +7,20 @@ defineProps<{
 }>();
 defineEmits(["play", "pause", "message", "sync", "change"]);
 
-const vanFieldRef = $ref<any>();
+let isPinterDown = $ref(false);
+
 const currentTime = defineModel<number>("currentTime");
+let currTime = $ref(currentTime.value);
+watch(() => currentTime.value, () => {
+  if (isPinterDown)
+    return;
+  currTime = currentTime.value;
+});
 const message = $ref("");
+
+useEventListener(window, "pointerup", () => {
+  isPinterDown = false;
+});
 </script>
 
 <template>
@@ -25,17 +36,18 @@ const message = $ref("");
     style="background: linear-gradient(rgba(0, 0, 0, 0), black)"
   >
     <div>
-      {{ timeFormat(currentTime, "MM:ss") }}/{{
+      {{ timeFormat(currTime, "MM:ss") }}/{{
         timeFormat(duration, "MM:ss")
       }}
     </div>
 
     <van-slider
-      v-model="currentTime"
+      v-model="currTime"
       :button-size="12"
       :min="0"
       :max="duration"
       @change="$emit('change', $event)"
+      @pointerdown="isPinterDown = true"
     />
     <div flex="~" gap="1em" items="center">
       <div
@@ -52,7 +64,6 @@ const message = $ref("");
       />
 
       <van-field
-        ref="vanFieldRef"
         v-model="message"
         placeholder="发个消息吧～"
         flex="1"
@@ -60,10 +71,10 @@ const message = $ref("");
         p="!y-0.5em !x-1em"
         text="!12px"
         lh="![1]"
+        enterkeyhint="send"
         @keypress.enter="
           $emit('message', message),
-          (message = ''),
-          vanFieldRef?.blur()
+          (message = '')
         "
       />
       <div

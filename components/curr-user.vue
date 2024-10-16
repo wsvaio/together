@@ -12,10 +12,13 @@ defineProps<{
 
 <template>
   <div
-    min="w-8em h-8em" w="max" box="border"
-    text="white 12px" :style="{
-    }" grid="~ cols-[max-content_max-content] auto-rows-max" gap=".25em"
-    style="text-shadow: 0 0 1px black;"
+    min="w-8em h-8em" w="max" box="border" text="white 12px"
+    grid="~ cols-[max-content_max-content] auto-rows-max" p=".5em"
+    gap=".25em" :style="{
+      boxShadow: show ? '0 0 0 1px rgba(255,255,255)' : undefined,
+      color: show ? 'rgba(255,255,255)' : 'rgba(255,255,255,0.5)',
+      textShadow: show ? '0 0 1px black' : undefined,
+    }"
   >
     <template v-for="item in users">
       <div>

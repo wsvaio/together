@@ -9,6 +9,7 @@ const controlRef = $ref<InstanceType<typeof Control>>();
 const uploadRef = $ref<InstanceType<typeof Upload>>();
 const bulletChatRef = $ref<InstanceType<typeof BulletChat>>();
 const user = useUserStore();
+const clientWidth = document.documentElement.clientWidth;
 
 const src = $ref("");
 let currentTime = $ref(0);
@@ -78,10 +79,15 @@ on("update:users", data => {
     <message :messages="messages" :show="show" />
   </dragable-box>
 
-  <transition name="fade">
-    <curr-user
-      v-show="show" pos="fixed" right="16px" top="64px"
-      :users="users"
-    />
-  </transition>
+  <dragable-box
+    pos="fixed" :disabled="!show" x-align="right" :offset-x="16"
+    :offset-y="64"
+  >
+    <transition name="fade">
+      <curr-user
+        :show="show"
+        :users="users"
+      />
+    </transition>
+  </dragable-box>
 </template>
