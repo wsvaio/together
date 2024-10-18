@@ -5,12 +5,13 @@ const divRef = $ref<HTMLDivElement>();
 
 const chats = reactive<{
   content: string;
+  type?: string;
   duration: number;
   timestamp: number;
   row: number;
 }[]>([]);
 
-async function bullet(chat: string) {
+async function bullet(chat: string, type?: "string") {
   const duration = (divRef?.clientWidth || screen.width) / ((Math.random() * 50 - 25) + 75);
   const timestamp = new Date().getTime();
 
@@ -29,6 +30,7 @@ async function bullet(chat: string) {
     content: chat,
     duration,
     timestamp,
+    type,
     row,
   };
   chats.push(item);
@@ -39,21 +41,26 @@ async function bullet(chat: string) {
 }
 
 defineExpose({
-  bullet
+  bullet,
 });
 </script>
 
 <template>
   <div ref="divRef" text="white" class="bullet-chat">
     <div
-      v-for="item in chats" :key="item.timestamp" pointer-events="none" :style="{
+      v-for="item in chats" :key="item.timestamp" :style="{
         '--duration': `${item.duration}s`,
         'top': `${item.row * 1.5 + 0.5}em`,
       }"
       class="chat"
     >
       <!-- <div>{{ item.nickname }}：</div> -->
-      {{ item.content }}
+      <span v-if="item.type != 'image'">{{ item.content }}</span>
+      <img
+        v-else :src="item.content" h="16dvmin" w="16dvmin"
+        object="contain"
+        align="top"
+      />
     </div>
   </div>
 </template>

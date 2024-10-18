@@ -1,23 +1,22 @@
 <script setup lang="ts">
-const { show, messages = [] } = defineProps<{
-  show?: boolean;
-  messages?: { nickname: string; message: string; timestamp: number }[];
+const { messages = [] } = defineProps<{
+  messages?: Record<any, any>[];
 }>();
 </script>
 
 <template>
-  <div
-    min="w-8em h-8em" w="max" box="border" p=".5em"
-    text="white 12px"
-    flex="~ col" gap=".25em" :style="{
-      boxShadow: show ? '0 0 0 1px rgba(255,255,255)' : undefined,
-      color: show ? 'rgba(255,255,255)' : 'rgba(255,255,255,0.5)',
-      textShadow: show ? '0 0 1px black' : undefined,
-    }"
-  >
-    <div v-for="item in messages" pointer-events="none">
-      <!-- <div>{{ item.nickname }}：</div> -->
-      <div>{{ `${item.nickname}：${item.message}` }}</div>
+  <div v-for="item in messages">
+    <!-- <div>{{ item.nickname }}：</div> -->
+    <div v-if="item.type === 'system'" break="all">{{ `系统消息：${item.message}` }}</div>
+    <div v-if="item.type === 'consumer'">
+      <span>{{ `${item.consumer.nickname}：` }}</span>
+
+      <img
+        v-if="item.messageType == 'image'"
+        align="top" :src="item.message" h="16dvmin"
+        object="contain"
+      />
+      <span v-else break="all">{{ `${item.message}` }}</span>
     </div>
   </div>
 </template>

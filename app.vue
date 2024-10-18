@@ -3,8 +3,9 @@
 </script>
 
 <template>
-  <!-- <van-nav-bar title="标题" /> -->
-  <ClientOnly>
-    <nuxt-page />
-  </ClientOnly>
+  <client-only>
+    <nuxt-layout>
+      <nuxt-page />
+    </nuxt-layout>
+  </client-only>
 </template>

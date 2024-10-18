@@ -806,8 +806,6 @@ const l1 = [
 ];
 const model = toModel(l1);
 
-console.log(model);
-
 function toModel(data: string[]) {
   const result = new Set<string>();
 

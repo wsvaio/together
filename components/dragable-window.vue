@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { useEventListener } from "@vueuse/core";
 
-const { disabled, xAlign = "left" } = defineProps<{
+const { disabled, xAlign = "left", show, title } = defineProps<{
+  show?: boolean;
+  title: string;
   disabled?: boolean;
   xAlign?: "left" | "right";
 }>();
 
 const divRef = $ref<HTMLDivElement>();
+const overflowDivRef = $ref<HTMLDivElement>();
 
 let x = $(defineModel<number>("offsetX", { default: 0 }));
 let y = $(defineModel<number>("offsetY", { default: 0 }));
@@ -57,15 +60,45 @@ useEventListener(window, ["pointermove", "touchmove"], ev => {
 useEventListener(window, ["touchend", "pointerup"], _ev => {
   load.isMove = false;
 }, { capture: true });
+
+defineExpose({
+  scrollToBottom() {
+    overflowDivRef?.scrollTo({
+      behavior: "smooth",
+      top: overflowDivRef?.scrollHeight,
+    });
+  }
+});
 </script>
 
 <template>
   <div
-    ref="divRef" :style="{
+    ref="divRef" min="w-8em h-8em" max="h-50dvmin w-50dvmin" w="max"
+    text="white 12px" overflow="auto" flex="~ col" :style="{
       [xAlign]: `${x}px`,
       top: `${y}px`,
-    }" @pointerdown.prevent.stop="handleMoveStart" @touchstart.prevent.stop="handleMoveStart"
+      boxShadow: show ? '0 0 0 1px rgba(255,255,255)' : undefined,
+      filter: show ? 'drop-shadow(0 0 1px black)' : undefined,
+      opacity: show ? 1 : 0.5,
+    }"
+    @pointerdown.prevent.stop="handleMoveStart" @touchstart.prevent.stop="handleMoveStart"
   >
-    <slot />
+    <div
+      p=".5em" flex="~" items="center" justify="between"
+      :style="{
+        borderBottom: show ? '1px solid rgba(255,255,255)' : '1px solid rgba(255,255,255,0.5)',
+      }"
+    >
+      <strong>{{ title }}</strong>
+      <div v-show="show" class="i-tabler:arrows-move" />
+    </div>
+    <div
+      ref="overflowDivRef"
+      p=".5em" flex="1 ~ col" gap=".25em" overflow="auto"
+      @pointerdown.stop=""
+      @touchstart.stop=""
+    >
+      <slot />
+    </div>
   </div>
 </template>
