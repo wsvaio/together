@@ -4,6 +4,7 @@ export type Room = {
   isPublic: boolean;
   consumers: Consumer[];
   permanent?: boolean;
+  timer?: NodeJS.Timeout;
 };
 
 export type Consumer = {

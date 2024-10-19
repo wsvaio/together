@@ -5,7 +5,7 @@ defineProps<{
   duration?: number;
   isPlay?: boolean;
 }>();
-defineEmits(["play", "pause", "message", "sync", "change", "image"]);
+defineEmits(["play", "pause", "message", "sync", "change", "image", "emoticon"]);
 
 let isPinterDown = $ref(false);
 
@@ -23,37 +23,6 @@ useEventListener(window, "pointerup", () => {
 });
 
 const { isFullscreen, toggle, isSupported } = useFullscreen();
-
-const show = $ref(false);
-let q = $ref("");
-let first = $ref(1);
-
-const datalist = reactive<any[]>([]);
-let { data, execute, status } = $(useAsyncData(async () => await $fetch(`/api/search?q=${q}&first=${first}`), {
-  immediate: false,
-}));
-// const noMore = computed(() => !data?.length);
-async function loadmore() {
-  first = datalist.length;
-  await execute();
-  if (!data)
-    return;
-  datalist.push(...data);
-}
-async function reload() {
-  first = 1;
-  await execute();
-  datalist.length = 0;
-  if (!data)
-    return;
-  datalist.push(...data);
-}
-async function reset() {
-  q = "";
-  first = 1;
-  datalist.length = 0;
-  data = undefined;
-}
 
 defineExpose({
   isSupported
@@ -73,32 +42,6 @@ defineExpose({
         timeFormat(duration, "MM:ss")
       }}
     </div>
-
-    <van-popup
-      v-model:show="show" position="bottom" round z="100"
-      @closed="reset()" @open="reload"
-    >
-      <van-field
-        v-model="q" grid="col-span-full" placeholder="搜索" enterkeyhint="search"
-        z="100" @keypress.enter="
-          reload()
-        "
-      />
-
-      <van-list
-        h="50dvh" :loading="status == 'pending'" overflow="auto"
-        p="1em" @load="loadmore()"
-      >
-        <div grid="~ cols-[repeat(auto-fit,minmax(16dvmin,1fr))] auto-rows-max" gap="1em">
-          <van-image
-            v-for="item in datalist" :key="item" :src="item" fit="cover"
-            aspect-ratio="1/1"
-            @click="$emit('image', item), show = false"
-          />
-        </div>
-        <!-- <van-empty v-else description="暂无图片" /> -->
-      </van-list>
-    </van-popup>
 
     <van-slider
       v-model="currTime" :button-size="12" :min="0" :max="duration"
@@ -123,11 +66,9 @@ defineExpose({
           (message = '')
         "
       />
-      <div
-        class="i-mdi:emoticon-happy-outline" text="32px" @click="
-          show = true
-        "
-      />
+      <div class="i-mdi:emoticon-happy-outline" text="32px" @click="$emit('emoticon')" />
+
+      <div class="i-lucide:image-up" text="32px" @click="$emit('image')" />
 
       <div v-if="isSupported" @click="toggle">
         <div v-if="!isFullscreen" class="i-bx:fullscreen" text="32px" />

@@ -56,11 +56,7 @@ defineExpose({
     >
       <!-- <div>{{ item.nickname }}：</div> -->
       <span v-if="item.type != 'image'">{{ item.content }}</span>
-      <img
-        v-else :src="item.content" h="16dvmin" w="16dvmin"
-        object="contain"
-        align="top"
-      />
+      <img v-else :src="item.content" max="h-16dvmin w-16dvmin" />
     </div>
   </div>
 </template>

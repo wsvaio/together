@@ -110,7 +110,12 @@ export default defineWebSocketHandler({
           consumers: room?.consumers,
         });
         if (room.consumers.length <= 0 && !room.permanent) {
-          deleteRoom(room.id);
+          clearTimeout(room.timer);
+          room.timer = setTimeout(() => {
+            if (room.consumers.length <= 0 && !room.permanent) {
+              deleteRoom(room.id);
+            }
+          }, 60000);
         }
       });
   },

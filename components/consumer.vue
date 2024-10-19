@@ -5,19 +5,23 @@ defineProps<{
   consumers?: Record<any, any>[];
 }>();
 defineEmits(["sync"]);
+
+const user = useUserStore();
 </script>
 
 <template>
-  <div grid="~ cols-[1fr_max-content]" items="center" gap=".5em">
+  <div grid="~ cols-[max-content_1fr_max-content]" items="center" gap=".5em" lh="[1]">
     <template v-for="item in consumers">
-      <!-- <van-image
-        :src="item.avatar" round width="2em" height="2em"
+      <van-image
+        :src="item.avatar" rounded="!1" overflow="hidden" width="2.5em"
+        height="2.5em"
         fit="cover"
-      /> -->
+      />
 
       <div>
-        <div>
-          <span break="all">{{ item.nickname }}</span>
+        <div break="all">
+          <span>{{ item.nickname }}</span>
+          <span v-if="item.nickname == user.nickname">(我)</span>
         </div>
 
         <div>

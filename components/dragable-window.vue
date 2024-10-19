@@ -94,7 +94,7 @@ defineExpose({
     </div>
     <div
       ref="overflowDivRef"
-      p=".5em" flex="1 ~ col" gap=".25em" overflow="auto"
+      p=".5em" flex="1 ~ col" gap="1em" overflow="auto"
       @pointerdown.stop=""
       @touchstart.stop=""
     >

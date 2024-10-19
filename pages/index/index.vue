@@ -24,22 +24,22 @@ const option2 = [
 const router = useRouter();
 
 const datalist = reactive<any[]>([]);
-const { data, execute, status } = $(useAsyncData(async () => await $fetch(`/api/room/list?name=${keyword}&isPublic=${value1}&orderBy=${value2}`, { method: "get" }), {
+let page = $ref(1);
+const { data, execute, status } = $(useAsyncData(async () => {
+  const data = await $fetch(`/api/room/list?page=${page}&name=${keyword}&isPublic=${value1}&orderBy=${value2}`);
+  datalist.push(...data?.list);
+  return data;
+}, {
   immediate: false,
 }));
 const noMore = computed(() => datalist.length >= (data?.total || 0));
 async function loadmore() {
   await execute();
-  if (!data)
-    return;
-  datalist.push(...data?.list);
 }
 async function reload() {
-  await execute();
+  page = 1;
   datalist.length = 0;
-  if (!data)
-    return;
-  datalist.push(...data?.list);
+  await loadmore();
 }
 
 onMounted(() => {
@@ -75,13 +75,14 @@ function handleToRoom(item: any) {
 
   <!-- <van-pull-refresh :model-value="status == 'pending'" flex="1" @refresh="reload()"> -->
   <van-list
-    v-if="datalist.length" h="50dvh" :loading="status != 'pending'" :finished="noMore"
+    v-if="datalist.length" h="50dvh" :loading="status == 'pending'" :finished="noMore"
     finished-text="没有更多了"
     @load="loadmore()"
   >
     <van-cell
       v-for="item in datalist" :key="item.id" :title="item.name" is-link
-      :value="item.consumers.length" :label="item.isPublic ? '公开' : '不公开'" @click="handleToRoom(item)"
+      :value="item.consumers.length"
+      :label="item.isPublic ? '公开' : '不公开'" @click="handleToRoom(item)"
     />
   </van-list>
   <van-empty v-else description="暂无房间，赶快创建一个吧～" />

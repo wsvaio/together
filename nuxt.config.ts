@@ -1,16 +1,22 @@
+import legacy from "@vitejs/plugin-legacy";
 import ReactivityTransform from "@vue-macros/reactivity-transform/vite";
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
-  modules: ["@vant/nuxt", "@unocss/nuxt", "@pinia/nuxt", "@vueuse/nuxt"],
-  css: ["~/assets/css/main.less"],
+  modules: ["@vant/nuxt", "@unocss/nuxt", "@pinia/nuxt", "@vueuse/nuxt", "@nuxt/content"],
+
+  css: ["~/assets/css/main.less", "github-markdown-css"],
   vant: {
     /** Options */
   },
   vite: {
-    plugins: [ReactivityTransform()],
+    plugins: [
+      ReactivityTransform() as any,
+      legacy({
+        targets: ["defaults", "not IE 11"],
+      }),
+    ],
   },
   nitro: {
     experimental: {
