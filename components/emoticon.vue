@@ -8,22 +8,20 @@ const vanFieldRef = $ref<FieldInstance>();
 const datalist = reactive<string[]>([]);
 let page = $ref(1);
 let { data, execute, status } = $(useAsyncData(async () => {
-  const data = await $fetch(`/api/search?q=${q}&page=${page++}`);
+  const data: Record<any, any> = await $fetch(`/api/search?page=${page++}&q=${q}`, { responseType: "json" });
+  console.log(typeof data, data);
   if (data.code == 200) {
-    datalist.push(...data?.list);
+    datalist.push(...data?.res);
     return data;
   }
-
   else {
-    showFailToast(data.ms
-
-    );
-    throw new Error(data.msg);
+    showFailToast(data?.msg);
+    throw new Error(data?.msg);
   }
 }, {
   immediate: false,
 }));
-const noMore = computed(() => datalist.length >= (data?.total || 0));
+const noMore = computed(() => datalist.length >= (data?.count || 0));
 async function loadmore() {
   await execute();
 }
