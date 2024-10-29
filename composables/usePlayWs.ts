@@ -15,7 +15,7 @@ export default () => {
       handlesMap.get("disconnected")?.run({});
     },
     autoReconnect: true,
-    heartbeat: true,
+    // heartbeat: true,
   });
 
   function send(event: string, data: Record<any, any>) {
