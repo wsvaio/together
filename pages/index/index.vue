@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import Banner1 from "~/assets/img/banner1.jpg";
-import Banner2 from "~/assets/img/banner2.jpg";
+import Banner1 from "~/assets/img/banner/1.gif";
+import Banner2 from "~/assets/img/banner/2.gif";
+import Banner3 from "~/assets/img/banner/3.gif";
+import Banner4 from "~/assets/img/banner/4.gif";
+import Banner5 from "~/assets/img/banner/5.gif";
 
 definePageMeta({
   name: "首页",
@@ -60,11 +63,8 @@ function handleToRoom(item: any) {
     enterkeyhint="search" @keypress.enter="reload"
   />
   <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
-    <van-swipe-item>
-      <img :src="Banner1" w="full" h="full" object="contain" />
-    </van-swipe-item>
-    <van-swipe-item>
-      <img :src="Banner2" w="full" h="full" object="contain" />
+    <van-swipe-item v-for="item in [Banner1, Banner2, Banner3, Banner4, Banner5]">
+      <img :src="item" w="full" h="full" object="cover" />
     </van-swipe-item>
   </van-swipe>
 

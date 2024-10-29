@@ -11,9 +11,14 @@ import {
 export default defineWebSocketHandler({
   async message(peer, message) {
     // 生产环境下，message居然没有json这个方法，跟dev环境下一致？？？？？？
-    const data = await trying(async () => JSON.parse(message.toString())).catch(
-      () => ""
-    );
+    const str = message.toString();
+
+    if (str === "ping") {
+      peer.send("pong");
+      return;
+    }
+
+    const data = await trying(async () => JSON.parse(str)).catch(() => "");
     if (!data)
       return;
 
@@ -110,12 +115,7 @@ export default defineWebSocketHandler({
           consumers: room?.consumers,
         });
         if (room.consumers.length <= 0 && !room.permanent) {
-          clearTimeout(room.timer);
-          room.timer = setTimeout(() => {
-            if (room.consumers.length <= 0 && !room.permanent) {
-              deleteRoom(room.id);
-            }
-          }, 60000);
+          deleteRoom(room.id);
         }
       });
   },
