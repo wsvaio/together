@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { compressPicture, filePicker, readAs, sleep, timeFormat } from "@wsvaio/utils";
+import { compressPicture, filePicker, readAs, sleep, throttle, timeFormat } from "@wsvaio/utils";
 import type BulletChat from "~/components/bullet-chat.vue";
 import type Control from "~/components/control.vue";
 import type DragableWindow from "~/components/dragable-window.vue";
@@ -98,16 +98,25 @@ async function handleSendImage(file?: File) {
     messageType: "image",
   });
 }
+
+const handleTimeupdate = throttle(() => {
+  send("update:consumer", {
+    roomId,
+    nickname: user.nickname,
+    status: "播放中",
+  });
+  send("update:consumer", {
+    roomId,
+    nickname: user.nickname,
+    currentTime,
+  });
+}, 1000);
 </script>
 
 <template>
   <div v-if="!controlRef?.isSupported" h="800dvh" />
   <player
-    ref="playerRef" :src @click="show = !show" @timeupdate="currentTime = playerRef!.videoRef!.currentTime, send('update:consumer', {
-      roomId,
-      nickname: user.nickname,
-      currentTime,
-    })"
+    ref="playerRef" :src @click="show = !show" @timeupdate="currentTime = playerRef!.videoRef!.currentTime, handleTimeupdate()"
     @play="send('update:consumer', {
       roomId,
       nickname: user.nickname,

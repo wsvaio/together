@@ -45,7 +45,7 @@ const user = useUserStore();
       <van-image
         grid="row-span-full" :src="item.consumer.avatar" rounded="1" overflow="hidden"
         aspect-ratio="[1/1]"
-        w="2.5em"
+        w="2.5em" fit="cover"
       />
 
       <small>{{ item.consumer.nickname }}</small>

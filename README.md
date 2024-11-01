@@ -1,75 +1,39 @@
-# Nuxt 3 Minimal Starter
+<!-- # 用户手册 -->
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## 软件介绍
 
-## Setup
+一起同步看视频，在线聊天，实时弹幕与表情包
 
-Make sure to install the dependencies:
+## 使用方法
 
-```bash
-# npm
-npm install
+1. 准备一份本地视频（你的小伙伴也需要一份）
 
-# pnpm
-pnpm install
+2. 打开此网站，新建一个房间
 
-# yarn
-yarn install
+3. 分享链接至你的小伙伴，让你的小伙伴加入房间
 
-# bun
-bun install
-```
+4. 点击上传按钮上传本地视频（你的小伙伴也要上传）
 
-## Development Server
+5. 点击播放开始观看，之后点击同步按钮同步进度
 
-Start the development server on `http://localhost:3000`:
+## 原理解析
 
-```bash
-# npm
-npm run dev
+通过双方上传**同一本地视频**的方式，可以大大节约观看视频所需的带宽（唯一不足就是需要双方提前准备好同一个视频）
 
-# pnpm
-pnpm run dev
+平台只需要对双方的进度进行记录，展示，并添加同步功能即可（所需带宽极低）
 
-# yarn
-yarn dev
+通过**websocket**协议与服务端进行通信，在关键步骤（加入房间、上传视频、开始播放、播放时等）将客户端状态发送至服务端
 
-# bun
-bun run dev
-```
+服务端接收到后再广播至客户端，客户端接收到后更新相应的视图或是处理相关操作（如同步功能）
 
-## Production
+至此便可实现基本的“一起看”功能
 
-Build the application for production:
+详情可以查看源码：
 
-```bash
-# npm
-npm run build
+https://github.com/wsvaio/together
 
-# pnpm
-pnpm run build
+## 关于作者
 
-# yarn
-yarn build
+一名籍籍无名的coder
 
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+wsvaio@qq.com

@@ -18,15 +18,13 @@ export type Consumer = {
   peer: any;
 };
 
-export const rooms: Room[] = [
-  {
-    id: crypto.randomUUID(),
-    name: "公共房间（常驻）",
-    isPublic: true,
-    consumers: [],
-    permanent: true,
-  },
-];
+export const rooms: Room[] = [];
+
+addRoom({
+  name: "公共房间（常驻）",
+  isPublic: true,
+  permanent: true,
+});
 
 export function roomAddConsumer(roomId: string, consumer: Consumer) {
   getRoom(roomId)?.consumers.push(consumer);
@@ -58,15 +56,17 @@ export function roomSend(
 }
 
 export function addRoom(
-  { name, isPublic } = {} as { name: string; isPublic: boolean }
+  { name, isPublic, permanent } = {} as { name: string; isPublic: boolean; permanent?: boolean }
 ) {
   const room = {
     name,
     isPublic,
     id: crypto.randomUUID(),
+    permanent,
     consumers: [],
   };
   rooms.push(room);
+  Object.defineProperty(room, "timer", { enumerable: false });
   return room;
 }
 

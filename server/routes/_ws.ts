@@ -114,15 +114,14 @@ export default defineWebSocketHandler({
         roomSend(room.id, "update:consumers", {
           consumers: room?.consumers,
         });
-        // if (room.consumers.length <= 0 && !room.permanent) {
-
-        // }
-        clearTimeout(room.timer);
-        room.timer = setTimeout(() => {
-          if (room.consumers.length <= 0 && !room.permanent) {
-            deleteRoom(room.id);
-          }
-        }, 60000);
+        if (room.consumers.length <= 0 && !room.permanent) {
+          clearTimeout(room.timer);
+          room.timer = setTimeout(() => {
+            if (room.consumers.length <= 0 && !room.permanent) {
+              deleteRoom(room.id);
+            }
+          }, 60000);
+        }
       });
   },
 });
