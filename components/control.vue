@@ -5,16 +5,16 @@ defineProps<{
   duration?: number;
   isPlay?: boolean;
 }>();
-defineEmits(["play", "pause", "message", "sync", "change", "image", "emoticon"]);
-
+defineEmits(["play", "pause", "message", "sync", "changeCurrentTime", "changePlaybackRate", "image", "emoticon"]);
 let isPinterDown = $ref(false);
 
-const currentTime = defineModel<number>("currentTime");
-let currTime = $ref(currentTime.value);
-watch(() => currentTime.value, () => {
+const currentTime = $(defineModel("currentTime", { default: 0 }));
+const playbackRate = $(defineModel("playbackRate", { default: 1 }));
+let currTime = $ref(currentTime);
+watch(() => currentTime, () => {
   if (isPinterDown)
     return;
-  currTime = currentTime.value;
+  currTime = currentTime;
 });
 const message = $ref("");
 
@@ -25,7 +25,8 @@ useEventListener(window, "pointerup", () => {
 const { isFullscreen, toggle, isSupported } = useFullscreen();
 
 defineExpose({
-  isSupported
+  isSupported,
+
 });
 </script>
 
@@ -37,16 +38,33 @@ defineExpose({
     bottom="0" right="0" left="0" p="1em"
     style="background: linear-gradient(rgba(0, 0, 0, 0), black)"
   >
-    <div>
-      {{ timeFormat(currTime, "MM:ss") }}/{{
-        timeFormat(duration, "MM:ss")
-      }}
+    <div flex="~" justify="between">
+      <span>{{ `${timeFormat(currTime, "MM:ss")}/${timeFormat(duration, "MM:ss")}` }}</span>
+
+      <van-popover
+        :actions="[
+          // { text: '4x', value: 4 },
+          // { text: '3x', value: 3 },
+          // { text: '2.25x', value: 2.25 },
+          { text: '2x', value: 2 },
+          { text: '1.75x', value: 1.75 },
+          { text: '1.5x', value: 1.5 },
+          { text: '1.25x', value: 1.25 },
+          { text: '1x', value: 1 },
+          { text: '0.75x', value: 0.75 },
+          { text: '0.5x', value: 0.5 },
+          { text: '0.25x', value: 0.25 },
+        ]" placement="left-end" @select="$emit('changePlaybackRate', playbackRate = $event.value)"
+      >
+        <template #reference>
+          <span cursor="pointer">{{ `${playbackRate}x` }}</span>
+        </template>
+      </van-popover>
     </div>
 
     <van-slider
       v-model="currTime" :button-size="12" :min="0" :max="duration"
-      @change="$emit('change', $event)"
-      @pointerdown="isPinterDown = true"
+      @change="$emit('changeCurrentTime', currentTime = $event)" @pointerdown="isPinterDown = true"
     />
     <div flex="~" gap="1em" items="center">
       <div v-if="!isPlay" class="i-material-symbols:play-arrow-rounded" text="32px" @click="$emit('play', currTime)" />

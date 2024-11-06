@@ -30,7 +30,6 @@ const consumerDragableWindowRef = $ref<InstanceType<typeof DragableWindow>>();
 const user = useUserStore();
 
 const src = $ref("");
-let currentTime = $ref(0);
 const show = $ref(true);
 const messages = reactive<Record<any, any>[]>([]);
 const showEmotion = $ref(false);
@@ -61,9 +60,14 @@ on("append:message", async data => {
   messageDragableWindowRef?.scrollToBottom();
 });
 
+let currentTime = $ref(0);
+let playbackRate = $ref(1);
+
 on("update:currentTime", data => {
-  playerRef?.videoRef?.currentTime && (playerRef.videoRef.currentTime = data.currentTime);
-  currentTime = data.currentTime;
+  if (!playerRef?.videoRef)
+    return;
+  playerRef.videoRef.currentTime = currentTime = data.currentTime;
+  playerRef.videoRef.playbackRate = playbackRate = data.playbackRate;
 });
 
 on("update:consumers", data => {
@@ -103,12 +107,8 @@ const handleTimeupdate = throttle(() => {
   send("update:consumer", {
     roomId,
     nickname: user.nickname,
+    currentTime: currentTime = playerRef?.videoRef?.currentTime || 0,
     status: "播放中",
-  });
-  send("update:consumer", {
-    roomId,
-    nickname: user.nickname,
-    currentTime,
   });
 }, 1000);
 </script>
@@ -116,8 +116,12 @@ const handleTimeupdate = throttle(() => {
 <template>
   <div v-if="!controlRef?.isSupported" h="800dvh" />
   <player
-    ref="playerRef" :src @click="show = !show" @timeupdate="currentTime = playerRef!.videoRef!.currentTime, handleTimeupdate()"
-    @play="send('update:consumer', {
+    ref="playerRef" :src @click="show = !show" @timeupdate="handleTimeupdate"
+    @ratechange="send('update:consumer', {
+      roomId,
+      nickname: user.nickname,
+      playbackRate: playerRef?.videoRef?.playbackRate,
+    })" @play="send('update:consumer', {
       roomId,
       nickname: user.nickname,
       status: '播放中',
@@ -129,7 +133,8 @@ const handleTimeupdate = throttle(() => {
       roomId,
       nickname: user.nickname,
       status: '播放完毕',
-    })" @error="
+    })"
+    @error="
       send('update:consumer', {
         roomId,
         nickname: user.nickname,
@@ -153,44 +158,42 @@ const handleTimeupdate = throttle(() => {
 
   <transition name="fade">
     <control
-      v-show="show" ref="controlRef" :duration="playerRef?.duration"
-      :is-play="playerRef?.isPlay"
-      :current-time="currentTime" @play="playerRef?.videoRef?.play?.(), playerRef!.videoRef!.currentTime = $event" @pause="playerRef?.videoRef?.pause?.()"
-      @change="val => playerRef?.videoRef?.currentTime && (playerRef.videoRef.currentTime = currentTime = val)"
-      @sync="send('sync', { roomId, currentTime, nickname: user.nickname })" @message="send('message', {
+      v-show="show" ref="controlRef" v-model:current-time="currentTime" v-model:playback-rate="playbackRate"
+      :duration="playerRef?.duration" :is-play="playerRef?.isPlay" @play="playerRef?.videoRef?.play?.()"
+      @pause="playerRef?.videoRef?.pause?.()"
+      @change-current-time="val => playerRef?.videoRef && (playerRef.videoRef.currentTime = val)"
+      @change-playback-rate="val => playerRef?.videoRef && (playerRef.videoRef.playbackRate = val)"
+      @sync="send('sync', { roomId, currentTime: playerRef?.videoRef?.currentTime, playbackRate: playerRef?.videoRef?.playbackRate, nickname: user.nickname })"
+      @message="send('message', {
         roomId,
         type: 'consumer',
         nickname: user.nickname,
         message: $event,
         messageType: 'text',
-      })"
-      @image="filePicker({
+      })" @image="filePicker({
         accept: 'image/*',
         onchange: (ev: any) => handleSendImage(ev?.target?.files?.[0]),
-      })"
-      @emoticon="showEmotion = true"
+      })" @emoticon="showEmotion = true"
     />
   </transition>
 
   <dragable-window
     ref="messageDragableWindowRef" :title="`互动消息(${messages.length})`" pos="fixed" :disabled="!show"
-    :offset-x="16"
-    :offset-y="64" :show="show"
+    :offset-x="16" :offset-y="64" :show="show"
   >
     <message :messages="messages" />
   </dragable-window>
 
   <dragable-window
     ref="consumerDragableWindowRef" :title="`观察者(${consumers.length})`" pos="fixed" :disabled="!show"
-    x-align="right"
-    :offset-x="16" :offset-y="64" :show="show"
+    x-align="right" :offset-x="16" :offset-y="64" :show="show"
   >
     <consumer
-      :consumers="consumers" @sync="currentTime = playerRef!.videoRef!.currentTime = $event.currentTime, send('message', {
+      :consumers="consumers" @sync="currentTime = playerRef!.videoRef!.currentTime = $event.currentTime, playbackRate = playerRef!.videoRef!.playbackRate = $event.playbackRate, send('message', {
         roomId,
         type: 'system',
         // message: `${user.nickname} 同步到了 ${$event.nickname} 的时间 ${timeFormat($event.currentTime, 'MM:ss')}`,
-        message: `${user.nickname} 对齐了 ${$event.nickname} 的时间颗粒度 ${timeFormat($event.currentTime, 'MM:ss')}`,
+        message: `${user.nickname} 同步了 ${$event.nickname} 的进度 ${timeFormat($event.currentTime, 'MM:ss')} ${$event.playbackRate}x`,
       })"
     />
   </dragable-window>

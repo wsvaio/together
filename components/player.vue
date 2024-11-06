@@ -2,7 +2,7 @@
 defineProps<{
   src?: string;
 }>();
-defineEmits(["timeupdate", "play", "pause", "ended", "error"]);
+defineEmits(["timeupdate", "play", "pause", "ended", "error", "ratechange"]);
 const videoRef = $ref<HTMLVideoElement>();
 
 const duration = $ref(0);
@@ -29,6 +29,7 @@ defineExpose({
     playsinline="true"
     x5-video-player-type="h5-page"
     @timeupdate="$emit('timeupdate', $event)"
+    @ratechange="$emit('ratechange', $event)"
     @durationchange="() => duration = videoRef!.duration"
     @play="isPlay = true, $emit('play', $event)"
     @pause="isPlay = false, $emit('pause', $event)"

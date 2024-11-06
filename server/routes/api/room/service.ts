@@ -14,6 +14,7 @@ export type Consumer = {
   status?: string;
 
   currentTime?: number;
+  playbackRate?: number;
 
   peer: any;
 };

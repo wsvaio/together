@@ -24,10 +24,7 @@ const user = useUserStore();
           <span v-if="item.nickname == user.nickname">(我)</span>
         </div>
 
-        <div>
-          <small>{{ item.status }}</small>
-          <small>({{ timeFormat(+item.currentTime, "MM:ss") }} )</small>
-        </div>
+        <small>{{ `${item.status} ${timeFormat(+item.currentTime, "MM:ss")} ${item.playbackRate}x` }}</small>
       </div>
 
       <!-- <div>{{ timeFormat(+item.currentTime, "MM:ss") }}</div> -->

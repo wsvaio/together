@@ -25,6 +25,7 @@ export default defineWebSocketHandler({
     if (data.event == "in") {
       const consumer = {
         currentTime: 0,
+        playbackRate: 1,
         status: "待上传",
         nickname: data.nickname,
         avatar: data.avatar,
@@ -72,13 +73,15 @@ export default defineWebSocketHandler({
     if (data.event == "sync") {
       roomSend(data.roomId, "update:currentTime", {
         currentTime: data.currentTime,
+        playbackRate: data.playbackRate,
       });
+
       roomSend(data.roomId, "append:message", {
         type: "system",
-        message: `${data.nickname} 为所有人对齐了时间颗粒度 ${timeFormat(
+        message: `${data.nickname} 为所有人同步了进度 ${timeFormat(
           data.currentTime,
           "MM:ss"
-        )}`,
+        )} ${data.playbackRate}x`,
         timestamp: new Date().getTime(),
       });
     }
