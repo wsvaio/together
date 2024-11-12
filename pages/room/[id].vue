@@ -125,7 +125,7 @@ const handleTimeupdate = throttle(() => {
       roomId,
       nickname: user.nickname,
       status: '播放中',
-    })" @pause="send('update:consumer', {
+    }), playerRef?.videoRef && (playerRef.videoRef.playbackRate = playbackRate)" @pause="send('update:consumer', {
       roomId,
       nickname: user.nickname,
       status: '暂停中',
