@@ -1,4 +1,4 @@
-import { listRoom } from "./service";
+import { listRoom } from "~/server/services/room";
 
 export default defineEventHandler(async event => {
   const query = getQuery(event);

@@ -6,6 +6,10 @@ import type DragableWindow from "~/components/dragable-window.vue";
 import type Player from "~/components/player.vue";
 import type Upload from "~/components/upload.vue";
 
+defineOptions({
+  name: "room"
+});
+
 definePageMeta({
   middleware: defineNuxtRouteMiddleware(async to => {
     const id = to.params.id;

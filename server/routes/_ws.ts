@@ -1,12 +1,12 @@
 import { merge, timeFormat, trying } from "@wsvaio/utils";
 import {
-  deleteRoom,
+  deleteEmptyRoom,
   getRoom,
   roomAddConsumer,
   roomDeleteConsumer,
   rooms,
   roomSend,
-} from "./api/room/service";
+} from "~/server/services/room";
 
 export default defineWebSocketHandler({
   async message(peer, message) {
@@ -117,14 +117,15 @@ export default defineWebSocketHandler({
         roomSend(room.id, "update:consumers", {
           consumers: room?.consumers,
         });
-        if (room.consumers.length <= 0 && !room.permanent) {
-          clearTimeout(room.timer);
-          room.timer = setTimeout(() => {
-            if (room.consumers.length <= 0 && !room.permanent) {
-              deleteRoom(room.id);
-            }
-          }, 60000);
-        }
+        deleteEmptyRoom();
+        //   if (room.consumers.length <= 0 && !room.permanent) {
+        //     clearTimeout(room.timer);
+        //     room.timer = setTimeout(() => {
+        //       if (room.consumers.length <= 0 && !room.permanent) {
+        //         deleteRoom(room.id);
+        //       }
+        //     }, 60000);
+        //   }
       });
   },
 });

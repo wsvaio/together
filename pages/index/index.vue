@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import Banner1 from "~/assets/img/banner/1.gif";
-import Banner2 from "~/assets/img/banner/2.gif";
-import Banner3 from "~/assets/img/banner/3.gif";
-import Banner4 from "~/assets/img/banner/4.gif";
-import Banner5 from "~/assets/img/banner/5.gif";
+import Bg1 from "~/assets/img/background/bg1.jpg";
 
 definePageMeta({
   name: "首页",
@@ -44,7 +40,6 @@ async function reload() {
   datalist.length = 0;
   await loadmore();
 }
-
 onMounted(() => {
   reload();
 });
@@ -63,7 +58,7 @@ function handleToRoom(item: any) {
     enterkeyhint="search" @keypress.enter="reload"
   />
   <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
-    <van-swipe-item v-for="item in [Banner1, Banner2, Banner3, Banner4, Banner5]">
+    <van-swipe-item v-for="item in [Bg1]">
       <img :src="item" w="full" h="full" object="cover" />
     </van-swipe-item>
   </van-swipe>
@@ -85,7 +80,9 @@ function handleToRoom(item: any) {
       :label="item.isPublic ? '公开' : '不公开'" @click="handleToRoom(item)"
     />
   </van-list>
-  <van-empty v-else description="暂无房间，赶快创建一个吧～" />
+  <client-only v-else>
+    <van-empty description="暂无房间，赶快创建一个吧～" />
+  </client-only>
   <!-- </van-pull-refresh> -->
 </template>
 

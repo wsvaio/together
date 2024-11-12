@@ -1,4 +1,4 @@
-import { addRoom } from "./service";
+import { addRoom } from "~/server/services/room";
 
 export default defineEventHandler(async event => {
   const body = await readBody(event);

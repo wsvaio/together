@@ -116,3 +116,26 @@ export function deleteRoom(id: string) {
     1
   );
 }
+
+export function deleteEmptyRoom() {
+  rooms.filter(item => !item.permanent).forEach(room => {
+    if (room.consumers.length) {
+      if (!room.timer)
+        return;
+      clearTimeout(room.timer);
+      room.timer = undefined;
+    }
+    else {
+      if (room.timer)
+        return;
+      room.timer = setTimeout(() => {
+        if (room.consumers.length <= 0) {
+          deleteRoom(room.id);
+        }
+        else {
+          room.timer = undefined;
+        }
+      }, 60000);
+    }
+  });
+}

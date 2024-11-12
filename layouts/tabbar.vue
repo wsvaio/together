@@ -5,7 +5,7 @@
 <template>
   <div
     max="w-100dvmin" mx="auto" h="100dvh"
-    overflow="auto" bg="#eaeae9"
+    overflow="auto" bg="#f6f7f9"
   >
     <van-nav-bar :title="$route.meta.name" :fixed="true" placeholder safe-area-inset-top />
     <slot />

@@ -1,4 +1,4 @@
-import { getRoom } from "./service";
+import { getRoom } from "~/server/services/room";
 
 export default defineEventHandler(event => {
   const id = getRouterParam(event, "id")!;
