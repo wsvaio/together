@@ -80,9 +80,7 @@ function handleToRoom(item: any) {
       :label="item.isPublic ? '公开' : '不公开'" @click="handleToRoom(item)"
     />
   </van-list>
-  <client-only v-else>
-    <van-empty description="暂无房间，赶快创建一个吧～" />
-  </client-only>
+  <van-empty v-else description="暂无房间，赶快创建一个吧～" />
   <!-- </van-pull-refresh> -->
 </template>
 

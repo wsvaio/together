@@ -3,11 +3,13 @@
 </script>
 
 <template>
-  <nuxt-layout>
-    <nuxt-page
-      :keepalive="{
-        exclude: ['room'],
-      }"
-    />
-  </nuxt-layout>
+  <client-only>
+    <nuxt-layout>
+      <nuxt-page
+        :keepalive="{
+          exclude: ['room'],
+        }"
+      />
+    </nuxt-layout>
+  </client-only>
 </template>
